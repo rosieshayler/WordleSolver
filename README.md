@@ -2,9 +2,9 @@
 
 A Python solver that filters and ranks a 14,000+ word guess dictionary to suggest the best next guess in under 20ms.
 
-**[Try the live app]**
+**[Try the live app](https://wordlesolver-dwcjjbb79ulbj2aa3zacto.streamlit.app/)**
 
-![Screenshot](screenshot.png)
+![Screenshot](ScreenshotWordle.png)
 
 ## How to use it
 1. Enter the word you guessed in Wordle.
