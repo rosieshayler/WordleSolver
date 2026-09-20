@@ -1,33 +1,38 @@
-from collections import Counter
+with open("wordlewords.txt") as f:
+    wordle_words = [line.strip() for line in f]
+#alphabet = list(string.ascii_lowercase)
 
-REPEAT_PENALTY = 0.5
+score = "00000"
+green_letters = ["","","","",""]
+possible_words = wordle_words
+count = 0
 
-def load_words(filepath="wordlewords.txt"):
-    """Reads the text file and returns a list of lowercase words."""
-    try:
-        with open(filepath) as f:
-            return [line.strip().lower() for line in f]
-    except FileNotFoundError:
-        return []
+import copy 
+while (score!="22222"):
+    count += 1
+    #finding what was entered
+    validation = False
+    while not validation:
+        word_tried = input("Input: ").lower()
+        if len(word_tried)==5:
+            validation = True
+    validation = False
+    while not validation:
+        score = input("Output: ")
+        if len(score)==5:
+            validation = True
+            for x in range(5):
+                if score[x]!='0' and score[x]!='1' and score[x]!='2':
+                    validation = False
+    
+    if score == 22222:
+        break
 
-def filter_wordle_words(possible_words, word_tried, score):
-    """
-    Takes the current list of possible words, the word just tried, and the 
-    score of that word (0 = grey, 1 = yellow, 2 = green) and returns a list 
-    of all remaining possible words.
-    """
-    word_tried = word_tried.lower()
-    new_possible_words = []
-
-    #initilise for this specific guess
     letter_counts = {}
     for char in word_tried:
         if char not in letter_counts:
             letter_counts[char] = {'min': 0, 'max': 5, 'banned_positions': []}
 
-    green_letters = ["", "", "", "", ""]
-
-    #establish minimum amount of times this letter can be in the word, using yellows and greens
     for x in range(5):
         letter = word_tried[x]
         status = score[x]
@@ -38,8 +43,7 @@ def filter_wordle_words(possible_words, word_tried, score):
         elif status == '1':
             letter_counts[letter]['min'] +=1
             letter_counts[letter]['banned_positions'].append(x)
-    
-    #establish maximum times this letter is in the word, using greys 
+        
     for x in range(5):
         letter = word_tried[x]
         status = score[x]
@@ -48,6 +52,7 @@ def filter_wordle_words(possible_words, word_tried, score):
             letter_counts[letter]['max'] = letter_counts[letter]['min']
             letter_counts[letter]['banned_positions'].append(x)
 
+    print("Here is a list of all possible words to try next: ")
     #find a list of new possible words
     new_possible_words = []
     for word in possible_words:
@@ -66,11 +71,11 @@ def filter_wordle_words(possible_words, word_tried, score):
         #banned positions 
         for x in range(5):
             char = word[x]
+
             if char in letter_counts and x in letter_counts[char]['banned_positions']:
                 valid_word = False
                 break
 
-        # skip to next word
         if not valid_word:
             continue
 
@@ -89,25 +94,8 @@ def filter_wordle_words(possible_words, word_tried, score):
             continue
 
         new_possible_words.append(word)
+        print(word)
     
-    return new_possible_words
+    possible_words = new_possible_words
 
-
-def letter_score(words):
-    """Score each letter by how common it is across the word list"""
-    count = Counter(letter for word in words for letter in set(word)) #counts the letter in
-    total = sum(counts.value())
-    return {letter: n/total for letter, n in counts.items()}
-
-def score_word(word, scores, penalty = REPEAT_PENALTY):
-    frequency = Counter() 
-    total = 0
-    for letter in word:
-        total += scores.get(letter, 0)*(penalty ** frequency[letter])
-        frequency[letter] += 1
-    return total
-
-def rank_words(words):
-    scores = letter_scores(words)
-    return sorted(words, key=lambda w: score_word(w, scores), reverse=True)
-    
+print('Well done, you have solved this wordle in ', count, ' attempts! Correct answer: ', word_tried)

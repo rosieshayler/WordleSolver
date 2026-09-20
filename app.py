@@ -7,6 +7,11 @@ st.set_page_config(page_title="Wordle Solver", page_icon="🟩")
 st.title("🟩🟨⬜️ Wordle Solver")
 st.write("Enter your guess and the colour score to filter the remaining possible words.")
 
+#rank the words
+@st.cache_data
+def get_ranked_words():
+    return rank_words(load_words("wordlewords.txt"))
+
 # session state management 
 if 'possible_words' not in st.session_state:
     st.session_state.possible_words = load_words("wordlewords.txt")
@@ -46,7 +51,14 @@ if st.button("Filter Words"):
 
 # output 
 st.divider()
+if st.session_state.possible_words:
+    st.subheader(f"Suggested next guess: {st.session_state.possible_words[0].upper()}")
+else:
+    st.warning("No words match. Check that your guesses and scores were entered correctly.")
+
 st.subheader(f"Possible words remaining: {len(st.session_state.possible_words)}")
+st.caption("Sorted from best guess to worst.")
+
 
 with st.container(height=300):
     for word in st.session_state.possible_words:
