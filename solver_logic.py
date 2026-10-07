@@ -96,7 +96,7 @@ def filter_wordle_words(possible_words, word_tried, score):
 def letter_scores(words):
     """Score each letter by how common it is across the word list"""
     count = Counter(letter for word in words for letter in set(word)) #counts the letter in
-    total = sum(count.values())
+    total = sum(count.value())
     return {letter: n/total for letter, n in count.items()}
 
 def score_word(word, scores, penalty = REPEAT_PENALTY):
