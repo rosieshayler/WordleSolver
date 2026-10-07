@@ -1,5 +1,5 @@
 import streamlit as st
-from solver_logic import load_words, filter_wordle_words
+from solver_logic import load_words, filter_wordle_words, rank_words
 import time
 
 # page set up
@@ -14,7 +14,7 @@ def get_ranked_words():
 
 # session state management 
 if 'possible_words' not in st.session_state:
-    st.session_state.possible_words = load_words("wordlewords.txt")
+    st.session_state.possible_words = get_ranked_words()
 
 # user interface
 col1, col2 = st.columns(2)
@@ -35,7 +35,7 @@ if st.button("Filter Words"):
         start_time = time.perf_counter()
         
         # 2. Run your flawlessly optimized logic
-        filtered_list = filter_wordle_words(st.session_state.possible_words, guess, score)
+        ranked_list = filter_wordle_words(st.session_state.possible_words, guess, score)
         
         # 3. Stop the timer
         end_time = time.perf_counter()
@@ -47,7 +47,7 @@ if st.button("Filter Words"):
         st.success(f"Filtered {len(st.session_state.possible_words)} words in {execution_time:.5f} seconds!")
         
         # Update the session state
-        st.session_state.possible_words = filtered_list
+        st.session_state.possible_words = ranked_list
 
 # output 
 st.divider()
@@ -67,7 +67,7 @@ with st.container(height=300):
 st.divider()
 if st.button("Reset Game"):
     # Reload the full dictionary to start over
-    st.session_state.possible_words = load_words("wordlewords.txt")
+    st.session_state.possible_words = get_ranked_words()
     st.rerun()
 
 
